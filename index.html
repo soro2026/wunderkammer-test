@@ -3,72 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- ★ 핵심 수정: referrer 정책 명시 -->
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>EG Wunderkammer · Music Chamber</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background: linear-gradient(180deg, #1a1410 0%, #0d0a08 100%);
-    padding: 40px 24px;
+    background: #0a0604;
     min-height: 100vh;
     font-family: 'Georgia', 'Noto Serif KR', serif;
     color: #d4c5a0;
+    overflow-x: hidden;
   }
-  .header { text-align: center; margin-bottom: 32px; max-width: 880px; margin-left: auto; margin-right: auto; }
+
+  /* ============ 상단 헤더 ============ */
+  .header {
+    text-align: center;
+    padding: 32px 24px 24px;
+    background: linear-gradient(180deg, #0a0604, transparent);
+    position: relative;
+    z-index: 10;
+  }
   .header-label { font-size: 11px; letter-spacing: 4px; color: #8a7654; margin-bottom: 8px; }
-  .divider { height: 1px; background: linear-gradient(90deg, transparent, #6b5838, transparent); margin: 12px 0; }
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, #6b5838, transparent); margin: 12px auto; max-width: 400px; }
   .floor-title { font-size: 22px; color: #e8d9b0; font-style: italic; letter-spacing: 2px; }
   .floor-sub { font-size: 13px; color: #8a7654; margin-top: 4px; letter-spacing: 1px; }
 
-  .gallery { max-width: 880px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 24px; }
-
-  .frame {
+  /* ============ 음악실 (배경 이미지 컨테이너) ============ */
+  .music-room {
     position: relative;
-    padding: 28px;
-    background: radial-gradient(ellipse at center, #2a1f15 0%, #1a1208 100%);
-    border-radius: 4px;
-    box-shadow:
-      0 0 0 1px #6b5838,
-      0 0 0 8px #1a1208,
-      0 0 0 10px #8a7654,
-      0 0 0 14px #1a1208,
-      0 0 0 15px #4a3a22,
-      0 30px 60px rgba(0,0,0,0.7),
-      inset 0 0 80px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    aspect-ratio: 1672 / 941;
+    background-image: url('music_room_bg.png');
+    background-size: cover;
+    background-position: center;
   }
-  .frame-inner {
-    position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px;
-    border: 1px solid rgba(138, 118, 84, 0.3);
-    pointer-events: none; border-radius: 2px;
-  }
-  .corner { position: absolute; width: 24px; height: 24px; opacity: 0.6; }
-  .corner.tl { top: 4px; left: 4px; border-top: 2px solid #b89968; border-left: 2px solid #b89968; }
-  .corner.tr { top: 4px; right: 4px; border-top: 2px solid #b89968; border-right: 2px solid #b89968; }
-  .corner.bl { bottom: 4px; left: 4px; border-bottom: 2px solid #b89968; border-left: 2px solid #b89968; }
-  .corner.br { bottom: 4px; right: 4px; border-bottom: 2px solid #b89968; border-right: 2px solid #b89968; }
 
-  .screen {
-    position: relative;
-    aspect-ratio: 16/9;
+  /* ============ 벽면 스크린 (스피커 사이) ============ */
+  /* 사진의 베이지색 벽면 안쪽 액자 영역에 정확히 맞춤 */
+  .wall-screen {
+    position: absolute;
+    /* 양쪽 스피커 사이 벽면 액자 영역 */
+    left: 25%;
+    right: 25%;
+    top: 5%;
+    bottom: 38%;
     background: #000;
-    border-radius: 2px;
     overflow: hidden;
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+    box-shadow: 
+      inset 0 0 60px rgba(0,0,0,0.9),
+      0 0 40px rgba(255, 200, 100, 0.15);
+    /* 따뜻한 조명이 비치는 듯한 효과 */
   }
-  .screen iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .wall-screen iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
 
+  /* 스크린 주변에 부드러운 빛 누출 (방의 따뜻한 조명이 스크린에 반사되는 듯) */
+  .wall-screen::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    box-shadow: 
+      inset 0 0 20px rgba(255, 180, 100, 0.1);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* ============ 진공관 호박빛 글로우 (4개) ============ */
+  .tube-glow {
+    position: absolute;
+    width: 2.2%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+  .tube-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at center,
+      rgba(255, 180, 80, 0.95) 0%,
+      rgba(255, 140, 50, 0.7) 20%,
+      rgba(255, 100, 30, 0.35) 45%,
+      rgba(200, 60, 20, 0.1) 75%,
+      transparent 100%
+    );
+    filter: blur(2px);
+  }
+  /* 각 진공관 위치 - 사진에 정확히 맞춤 */
+  .tube-1 { left: 42.5%; top: 67.5%; animation: tube-flicker 3.2s ease-in-out infinite; }
+  .tube-2 { left: 47.2%; top: 68.5%; animation: tube-flicker 2.7s ease-in-out infinite 0.3s; }
+  .tube-3 { left: 51%; top: 68.5%; animation: tube-flicker 3.5s ease-in-out infinite 0.8s; }
+  .tube-4 { left: 55.5%; top: 67.5%; animation: tube-flicker 2.9s ease-in-out infinite 0.5s; }
+  
+  /* 작은 진공관 (가운데 큰 진공관 2개) */
+  .tube-big-1 { left: 44.5%; top: 65%; width: 2.8%; animation: tube-flicker 3.8s ease-in-out infinite 0.2s; }
+  .tube-big-2 { left: 53%; top: 65%; width: 2.8%; animation: tube-flicker 3.4s ease-in-out infinite 0.6s; }
+
+  @keyframes tube-flicker {
+    0%, 100% { opacity: 0.85; transform: scale(1); }
+    25% { opacity: 1; transform: scale(1.03); }
+    50% { opacity: 0.78; transform: scale(0.98); }
+    75% { opacity: 0.92; transform: scale(1.01); }
+  }
+
+  /* ============ VU 미터 바늘 (2개) ============ */
+  .vu-meter {
+    position: absolute;
+    width: 4.5%;
+    aspect-ratio: 2.2 / 1;
+    pointer-events: none;
+  }
+  .vu-meter svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .vu-needle {
+    transform-origin: 50% 95%;
+    animation: vu-swing 1.8s ease-in-out infinite;
+    stroke: #1a1a0a;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    fill: none;
+  }
+  /* 좌우 VU 미터 위치 */
+  .vu-left { left: 41.5%; top: 78%; }
+  .vu-right { left: 53.7%; top: 78%; }
+  /* 좌우 미터가 살짝 다른 박자로 움직이도록 */
+  .vu-left .vu-needle { animation-duration: 1.7s; }
+  .vu-right .vu-needle { animation-duration: 2.1s; animation-delay: 0.3s; }
+
+  @keyframes vu-swing {
+    0% { transform: rotate(-35deg); }
+    15% { transform: rotate(-10deg); }
+    25% { transform: rotate(-25deg); }
+    40% { transform: rotate(5deg); }
+    50% { transform: rotate(-15deg); }
+    65% { transform: rotate(15deg); }
+    75% { transform: rotate(-5deg); }
+    85% { transform: rotate(-20deg); }
+    100% { transform: rotate(-35deg); }
+  }
+
+  /* ============ 명패 (음악실 아래) ============ */
   .nameplate {
-    margin-top: 20px;
+    max-width: 880px;
+    margin: 32px auto 0;
     text-align: center;
-    padding: 14px 20px;
+    padding: 18px 24px;
     background: linear-gradient(180deg, #2a1f15, #1a1208);
     border: 1px solid #4a3a22;
     border-radius: 2px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
   }
   .plate-cat { font-size: 10px; letter-spacing: 3px; color: #8a7654; margin-bottom: 6px; }
-  .plate-title { font-size: 18px; color: #e8d9b0; font-style: italic; letter-spacing: 1px; }
+  .plate-title { font-size: 20px; color: #e8d9b0; font-style: italic; letter-spacing: 1px; }
   .plate-meta { font-size: 11px; color: #8a7654; margin-top: 6px; font-style: italic; }
+
+  /* ============ 큐레이터 메모 + 메타 ============ */
+  .lower-content {
+    max-width: 880px;
+    margin: 24px auto 40px;
+    padding: 0 24px;
+    display: grid;
+    gap: 24px;
+  }
 
   .note-card {
     background: linear-gradient(135deg, #f4e8c8 0%, #e8d4a0 100%);
@@ -115,7 +223,7 @@
   .visitor-num { font-size: 22px; color: #e8d9b0; font-style: italic; }
   .visitor-txt { font-size: 11px; color: #8a7654; }
 
-  .actions { display: flex; gap: 10px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+  .actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
   .btn {
     background: linear-gradient(180deg, #4a3a22, #2a1f15);
     color: #e8d9b0;
@@ -131,21 +239,10 @@
   .btn:hover { background: linear-gradient(180deg, #6b5838, #4a3a22); }
 
   .footer {
-    text-align: center; margin-top: 24px;
+    text-align: center; padding-bottom: 32px;
     font-size: 10px; color: #6b5838;
     letter-spacing: 2px; font-style: italic;
   }
-
-  .diagnostic {
-    max-width: 880px; margin: 24px auto 0;
-    background: rgba(80, 60, 30, 0.2);
-    border: 1px dashed #6b5838;
-    padding: 14px 18px;
-    font-size: 11px; color: #8a7654;
-    line-height: 1.6;
-    border-radius: 2px;
-  }
-  .diagnostic b { color: #b89968; }
 </style>
 </head>
 <body>
@@ -157,33 +254,50 @@
     <div class="floor-sub">Music Chamber · 큐레이션 컬렉션</div>
   </div>
 
-  <div class="gallery">
+  <!-- ============ 음악감상실 ============ -->
+  <div class="music-room">
 
-    <!-- 황금 액자 + 영상 -->
-    <div class="frame">
-      <div class="frame-inner"></div>
-      <div class="corner tl"></div>
-      <div class="corner tr"></div>
-      <div class="corner bl"></div>
-      <div class="corner br"></div>
-
-      <div class="screen">
-        <!-- ★ 핵심 수정: youtube-nocookie.com 사용 + referrerpolicy 명시 -->
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/FKGjVMIALJo?rel=0&modestbranding=1"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen></iframe>
-      </div>
-
-      <div class="nameplate">
-        <div class="plate-cat">REQUIEM IN D MINOR · K. 626</div>
-        <div class="plate-title">Wolfgang Amadeus Mozart</div>
-        <div class="plate-meta">1791 · 미완성 유작</div>
-      </div>
+    <!-- 벽면 스크린 (영상) -->
+    <div class="wall-screen">
+      <iframe
+        src="https://www.youtube-nocookie.com/embed/FKGjVMIALJo?rel=0&modestbranding=1"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
     </div>
 
-    <!-- 큐레이터 메모 -->
+    <!-- 진공관 호박빛 글로우 (4개 + 큰 거 2개) -->
+    <div class="tube-glow tube-1"></div>
+    <div class="tube-glow tube-2"></div>
+    <div class="tube-glow tube-3"></div>
+    <div class="tube-glow tube-4"></div>
+    <div class="tube-glow tube-big-1"></div>
+    <div class="tube-glow tube-big-2"></div>
+
+    <!-- VU 미터 바늘 (좌/우) -->
+    <div class="vu-meter vu-left">
+      <svg viewBox="0 0 100 50">
+        <path class="vu-needle" d="M 50 48 L 50 8" />
+      </svg>
+    </div>
+    <div class="vu-meter vu-right">
+      <svg viewBox="0 0 100 50">
+        <path class="vu-needle" d="M 50 48 L 50 8" />
+      </svg>
+    </div>
+
+  </div>
+
+  <!-- 명패 -->
+  <div class="nameplate">
+    <div class="plate-cat">REQUIEM IN D MINOR · K. 626</div>
+    <div class="plate-title">Wolfgang Amadeus Mozart</div>
+    <div class="plate-meta">1791 · 미완성 유작 · Concerts-Austria, Minoritenkirche</div>
+  </div>
+
+  <!-- 큐레이터 메모 + 메타 -->
+  <div class="lower-content">
+
     <div class="note-card">
       <div class="pin"></div>
       <div class="note-label">CURATOR'S NOTE</div>
@@ -196,7 +310,6 @@
       <div class="note-sig">— 큐레이터 마리 (Maria)</div>
     </div>
 
-    <!-- 메타 정보 -->
     <div class="meta-row">
       <div class="meta-card">
         <div class="meta-label">DONATED BY</div>
@@ -208,7 +321,6 @@
           </div>
         </div>
       </div>
-
       <div class="meta-card">
         <div class="meta-label">CHAMBER VISITORS</div>
         <div class="visitor-row">
@@ -218,24 +330,15 @@
       </div>
     </div>
 
-    <!-- 액션 -->
     <div class="actions">
       <button class="btn">⭐ 컬렉션 추가</button>
       <button class="btn">🍎 황금사과 전달</button>
       <button class="btn">✉ 큐레이터에게</button>
     </div>
 
-    <div class="footer">··· Wunderkammer · Floor IV · 27 of 109 ···</div>
   </div>
 
-  <div class="diagnostic">
-    <b>🔧 진단 메모 (테스트용 — 실제 앱에선 제거)</b><br>
-    이 버전은 <b>Error 153</b>의 진짜 원인이었던 <b>Referrer 헤더 누락</b>을 해결했습니다:<br>
-    ① <code>&lt;meta name="referrer"&gt;</code> 메타 태그 추가<br>
-    ② iframe에 <code>referrerpolicy="strict-origin-when-cross-origin"</code> 속성<br>
-    ③ <code>youtube.com</code> → <code>youtube-nocookie.com</code> 으로 변경 (개인정보 보호 강화 임베드 도메인)<br><br>
-    그래도 안 된다면, 이 HTML 파일을 더블클릭으로 열지 말고 → GitHub Pages에 올리거나 → 로컬 서버(<code>python -m http.server</code>)로 열어보세요. <code>file://</code> 프로토콜이 근본 원인일 수 있어요.
-  </div>
+  <div class="footer">··· Wunderkammer · Floor IV · 27 of 109 ···</div>
 
 </body>
 </html>
