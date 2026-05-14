@@ -77,7 +77,7 @@
   /* ============ 진공관 호박빛 글로우 (4개) ============ */
   .tube-glow {
     position: absolute;
-    width: 2.2%;
+    width: 2.4%;
     aspect-ratio: 1;
     border-radius: 50%;
     pointer-events: none;
@@ -98,15 +98,17 @@
     );
     filter: blur(2px);
   }
-  /* 각 진공관 위치 - 사진에 정확히 맞춤 */
-  .tube-1 { left: 42.5%; top: 67.5%; animation: tube-flicker 3.2s ease-in-out infinite; }
-  .tube-2 { left: 47.2%; top: 68.5%; animation: tube-flicker 2.7s ease-in-out infinite 0.3s; }
-  .tube-3 { left: 51%; top: 68.5%; animation: tube-flicker 3.5s ease-in-out infinite 0.8s; }
-  .tube-4 { left: 55.5%; top: 67.5%; animation: tube-flicker 2.9s ease-in-out infinite 0.5s; }
-  
-  /* 작은 진공관 (가운데 큰 진공관 2개) */
-  .tube-big-1 { left: 44.5%; top: 65%; width: 2.8%; animation: tube-flicker 3.8s ease-in-out infinite 0.2s; }
-  .tube-big-2 { left: 53%; top: 65%; width: 2.8%; animation: tube-flicker 3.4s ease-in-out infinite 0.6s; }
+  /* 각 진공관 위치 - 좌2 + 중3 + 우2 = 7개, 진공관 하단 필라멘트 위치에 맞춤 */
+  /* 좌측 박스 (진공관 2개) */
+  .tube-L1 { left: 42.5%; top: 71%; animation: tube-flicker 3.2s ease-in-out infinite; }
+  .tube-L2 { left: 44.7%; top: 71%; animation: tube-flicker 2.7s ease-in-out infinite 0.4s; }
+  /* 중앙 박스 (큰 진공관 3개) */
+  .tube-C1 { left: 48.3%; top: 70%; width: 2.6%; animation: tube-flicker 3.5s ease-in-out infinite 0.2s; }
+  .tube-C2 { left: 50.5%; top: 70%; width: 2.6%; animation: tube-flicker 3.8s ease-in-out infinite 0.6s; }
+  .tube-C3 { left: 52.7%; top: 70%; width: 2.6%; animation: tube-flicker 3.3s ease-in-out infinite 0.9s; }
+  /* 우측 박스 (진공관 2개) */
+  .tube-R1 { left: 56.3%; top: 71%; animation: tube-flicker 2.9s ease-in-out infinite 0.3s; }
+  .tube-R2 { left: 58.5%; top: 71%; animation: tube-flicker 3.6s ease-in-out infinite 0.7s; }
 
   @keyframes tube-flicker {
     0%, 100% { opacity: 0.85; transform: scale(1); }
@@ -115,10 +117,10 @@
     75% { opacity: 0.92; transform: scale(1.01); }
   }
 
-  /* ============ VU 미터 바늘 (2개) ============ */
+  /* ============ VU 미터 바늘 (2개) - 미터 중앙에 정밀 배치 ============ */
   .vu-meter {
     position: absolute;
-    width: 4.5%;
+    width: 3.2%;
     aspect-ratio: 2.2 / 1;
     pointer-events: none;
   }
@@ -131,27 +133,28 @@
     transform-origin: 50% 95%;
     animation: vu-swing 1.8s ease-in-out infinite;
     stroke: #1a1a0a;
-    stroke-width: 1.5;
+    stroke-width: 1.8;
     stroke-linecap: round;
     fill: none;
   }
-  /* 좌우 VU 미터 위치 */
-  .vu-left { left: 41.5%; top: 78%; }
-  .vu-right { left: 53.7%; top: 78%; }
+  /* 좌우 VU 미터 위치 - 푸른 미터 화면 중앙에 정확히 */
+  .vu-left { left: 44.5%; top: 82%; }
+  .vu-right { left: 52.3%; top: 82%; }
   /* 좌우 미터가 살짝 다른 박자로 움직이도록 */
   .vu-left .vu-needle { animation-duration: 1.7s; }
   .vu-right .vu-needle { animation-duration: 2.1s; animation-delay: 0.3s; }
 
+  /* 바늘 진동 폭 절제: 중앙 부근 ±15도 정도로 미세하게 */
   @keyframes vu-swing {
-    0% { transform: rotate(-35deg); }
-    15% { transform: rotate(-10deg); }
-    25% { transform: rotate(-25deg); }
-    40% { transform: rotate(5deg); }
-    50% { transform: rotate(-15deg); }
-    65% { transform: rotate(15deg); }
-    75% { transform: rotate(-5deg); }
-    85% { transform: rotate(-20deg); }
-    100% { transform: rotate(-35deg); }
+    0% { transform: rotate(-12deg); }
+    15% { transform: rotate(-3deg); }
+    25% { transform: rotate(-8deg); }
+    40% { transform: rotate(4deg); }
+    50% { transform: rotate(-5deg); }
+    65% { transform: rotate(7deg); }
+    75% { transform: rotate(-2deg); }
+    85% { transform: rotate(-9deg); }
+    100% { transform: rotate(-12deg); }
   }
 
   /* ============ 명패 (음악실 아래) ============ */
@@ -266,13 +269,14 @@
         allowfullscreen></iframe>
     </div>
 
-    <!-- 진공관 호박빛 글로우 (4개 + 큰 거 2개) -->
-    <div class="tube-glow tube-1"></div>
-    <div class="tube-glow tube-2"></div>
-    <div class="tube-glow tube-3"></div>
-    <div class="tube-glow tube-4"></div>
-    <div class="tube-glow tube-big-1"></div>
-    <div class="tube-glow tube-big-2"></div>
+    <!-- 진공관 호박빛 글로우 (좌2 + 중3 + 우2 = 7개) -->
+    <div class="tube-glow tube-L1"></div>
+    <div class="tube-glow tube-L2"></div>
+    <div class="tube-glow tube-C1"></div>
+    <div class="tube-glow tube-C2"></div>
+    <div class="tube-glow tube-C3"></div>
+    <div class="tube-glow tube-R1"></div>
+    <div class="tube-glow tube-R2"></div>
 
     <!-- VU 미터 바늘 (좌/우) -->
     <div class="vu-meter vu-left">
