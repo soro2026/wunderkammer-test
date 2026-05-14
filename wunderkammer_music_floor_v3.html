@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ★ 핵심 수정: referrer 정책 명시 -->
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>EG Wunderkammer · Music Chamber</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: linear-gradient(180deg, #1a1410 0%, #0d0a08 100%);
+    padding: 40px 24px;
+    min-height: 100vh;
+    font-family: 'Georgia', 'Noto Serif KR', serif;
+    color: #d4c5a0;
+  }
+  .header { text-align: center; margin-bottom: 32px; max-width: 880px; margin-left: auto; margin-right: auto; }
+  .header-label { font-size: 11px; letter-spacing: 4px; color: #8a7654; margin-bottom: 8px; }
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, #6b5838, transparent); margin: 12px 0; }
+  .floor-title { font-size: 22px; color: #e8d9b0; font-style: italic; letter-spacing: 2px; }
+  .floor-sub { font-size: 13px; color: #8a7654; margin-top: 4px; letter-spacing: 1px; }
+
+  .gallery { max-width: 880px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 24px; }
+
+  .frame {
+    position: relative;
+    padding: 28px;
+    background: radial-gradient(ellipse at center, #2a1f15 0%, #1a1208 100%);
+    border-radius: 4px;
+    box-shadow:
+      0 0 0 1px #6b5838,
+      0 0 0 8px #1a1208,
+      0 0 0 10px #8a7654,
+      0 0 0 14px #1a1208,
+      0 0 0 15px #4a3a22,
+      0 30px 60px rgba(0,0,0,0.7),
+      inset 0 0 80px rgba(0,0,0,0.5);
+  }
+  .frame-inner {
+    position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px;
+    border: 1px solid rgba(138, 118, 84, 0.3);
+    pointer-events: none; border-radius: 2px;
+  }
+  .corner { position: absolute; width: 24px; height: 24px; opacity: 0.6; }
+  .corner.tl { top: 4px; left: 4px; border-top: 2px solid #b89968; border-left: 2px solid #b89968; }
+  .corner.tr { top: 4px; right: 4px; border-top: 2px solid #b89968; border-right: 2px solid #b89968; }
+  .corner.bl { bottom: 4px; left: 4px; border-bottom: 2px solid #b89968; border-left: 2px solid #b89968; }
+  .corner.br { bottom: 4px; right: 4px; border-bottom: 2px solid #b89968; border-right: 2px solid #b89968; }
+
+  .screen {
+    position: relative;
+    aspect-ratio: 16/9;
+    background: #000;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+  }
+  .screen iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+  .nameplate {
+    margin-top: 20px;
+    text-align: center;
+    padding: 14px 20px;
+    background: linear-gradient(180deg, #2a1f15, #1a1208);
+    border: 1px solid #4a3a22;
+    border-radius: 2px;
+  }
+  .plate-cat { font-size: 10px; letter-spacing: 3px; color: #8a7654; margin-bottom: 6px; }
+  .plate-title { font-size: 18px; color: #e8d9b0; font-style: italic; letter-spacing: 1px; }
+  .plate-meta { font-size: 11px; color: #8a7654; margin-top: 6px; font-style: italic; }
+
+  .note-card {
+    background: linear-gradient(135deg, #f4e8c8 0%, #e8d4a0 100%);
+    color: #3a2a18;
+    padding: 24px 28px;
+    border-radius: 2px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5), inset 0 0 40px rgba(180, 150, 100, 0.15);
+    position: relative;
+    transform: rotate(-0.3deg);
+  }
+  .pin {
+    position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+    width: 16px; height: 16px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #c89860, #6b4818);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+  .note-label { font-size: 10px; letter-spacing: 3px; color: #8a6a3a; margin-bottom: 10px; }
+  .note-body { font-size: 14px; line-height: 1.8; color: #3a2a18; }
+  .note-sig {
+    margin-top: 16px; padding-top: 14px;
+    border-top: 1px dashed #b89968;
+    font-size: 12px; color: #6b4818; font-style: italic; text-align: right;
+  }
+
+  .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .meta-card {
+    background: rgba(42, 31, 21, 0.6);
+    border: 1px solid #4a3a22;
+    padding: 16px 20px;
+    border-radius: 2px;
+  }
+  .meta-label { font-size: 9px; letter-spacing: 2px; color: #8a7654; margin-bottom: 8px; }
+  .avatar-row { display: flex; align-items: center; gap: 10px; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #6b5838, #3a2a18);
+    display: flex; align-items: center; justify-content: center;
+    color: #e8d9b0; font-size: 14px; font-style: italic;
+    border: 1px solid #8a7654;
+  }
+  .name { font-size: 13px; color: #e8d9b0; }
+  .sub { font-size: 10px; color: #8a7654; }
+  .visitor-row { display: flex; align-items: baseline; gap: 12px; }
+  .visitor-num { font-size: 22px; color: #e8d9b0; font-style: italic; }
+  .visitor-txt { font-size: 11px; color: #8a7654; }
+
+  .actions { display: flex; gap: 10px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+  .btn {
+    background: linear-gradient(180deg, #4a3a22, #2a1f15);
+    color: #e8d9b0;
+    border: 1px solid #6b5838;
+    padding: 10px 22px;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: linear-gradient(180deg, #6b5838, #4a3a22); }
+
+  .footer {
+    text-align: center; margin-top: 24px;
+    font-size: 10px; color: #6b5838;
+    letter-spacing: 2px; font-style: italic;
+  }
+
+  .diagnostic {
+    max-width: 880px; margin: 24px auto 0;
+    background: rgba(80, 60, 30, 0.2);
+    border: 1px dashed #6b5838;
+    padding: 14px 18px;
+    font-size: 11px; color: #8a7654;
+    line-height: 1.6;
+    border-radius: 2px;
+  }
+  .diagnostic b { color: #b89968; }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-label">EG WUNDERKAMMER</div>
+    <div class="divider"></div>
+    <div class="floor-title">Floor IV · 音樂室</div>
+    <div class="floor-sub">Music Chamber · 큐레이션 컬렉션</div>
+  </div>
+
+  <div class="gallery">
+
+    <!-- 황금 액자 + 영상 -->
+    <div class="frame">
+      <div class="frame-inner"></div>
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+
+      <div class="screen">
+        <!-- ★ 핵심 수정: youtube-nocookie.com 사용 + referrerpolicy 명시 -->
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/FKGjVMIALJo?rel=0&modestbranding=1"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+      </div>
+
+      <div class="nameplate">
+        <div class="plate-cat">REQUIEM IN D MINOR · K. 626</div>
+        <div class="plate-title">Wolfgang Amadeus Mozart</div>
+        <div class="plate-meta">1791 · 미완성 유작</div>
+      </div>
+    </div>
+
+    <!-- 큐레이터 메모 -->
+    <div class="note-card">
+      <div class="pin"></div>
+      <div class="note-label">CURATOR'S NOTE</div>
+      <div class="note-body">
+        모차르트가 죽음의 문턱에서 받아 든 의뢰.<br>
+        검은 옷을 입은 낯선 사내가 두고 간 악보 종이 위로, 그는 자신의 진혼곡을 써 내려갔다.
+        <span style="font-style: italic;">Lacrimosa</span>의 여덟 마디에서 펜이 멈췄을 때,
+        그는 서른다섯이었다.
+      </div>
+      <div class="note-sig">— 큐레이터 마리 (Maria)</div>
+    </div>
+
+    <!-- 메타 정보 -->
+    <div class="meta-row">
+      <div class="meta-card">
+        <div class="meta-label">DONATED BY</div>
+        <div class="avatar-row">
+          <div class="avatar">S</div>
+          <div>
+            <div class="name">소로 (Soro)</div>
+            <div class="sub">2026.05.14 · Single-A</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-card">
+        <div class="meta-label">CHAMBER VISITORS</div>
+        <div class="visitor-row">
+          <div class="visitor-num">127</div>
+          <div class="visitor-txt">명이 머물다 갔습니다</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 액션 -->
+    <div class="actions">
+      <button class="btn">⭐ 컬렉션 추가</button>
+      <button class="btn">🍎 황금사과 전달</button>
+      <button class="btn">✉ 큐레이터에게</button>
+    </div>
+
+    <div class="footer">··· Wunderkammer · Floor IV · 27 of 109 ···</div>
+  </div>
+
+  <div class="diagnostic">
+    <b>🔧 진단 메모 (테스트용 — 실제 앱에선 제거)</b><br>
+    이 버전은 <b>Error 153</b>의 진짜 원인이었던 <b>Referrer 헤더 누락</b>을 해결했습니다:<br>
+    ① <code>&lt;meta name="referrer"&gt;</code> 메타 태그 추가<br>
+    ② iframe에 <code>referrerpolicy="strict-origin-when-cross-origin"</code> 속성<br>
+    ③ <code>youtube.com</code> → <code>youtube-nocookie.com</code> 으로 변경 (개인정보 보호 강화 임베드 도메인)<br><br>
+    그래도 안 된다면, 이 HTML 파일을 더블클릭으로 열지 말고 → GitHub Pages에 올리거나 → 로컬 서버(<code>python -m http.server</code>)로 열어보세요. <code>file://</code> 프로토콜이 근본 원인일 수 있어요.
+  </div>
+
+</body>
+</html>
