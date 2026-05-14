@@ -28,6 +28,51 @@
   .floor-title { font-size: 22px; color: #e8d9b0; font-style: italic; letter-spacing: 2px; }
   .floor-sub { font-size: 13px; color: #8a7654; margin-top: 4px; letter-spacing: 1px; }
 
+  /* ============ 곡 선택 토글 (목업 단계) ============ */
+  .track-selector {
+    max-width: 880px;
+    margin: 16px auto 0;
+    padding: 0 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .track-btn {
+    background: linear-gradient(180deg, #2a1f15, #1a1208);
+    border: 1px solid #4a3a22;
+    color: #8a7654;
+    padding: 10px 20px;
+    font-family: 'Georgia', 'Noto Serif KR', serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s;
+    min-width: 220px;
+    text-align: left;
+  }
+  .track-btn:hover {
+    border-color: #6b5838;
+    color: #b89968;
+  }
+  .track-btn.active {
+    background: linear-gradient(180deg, #4a3a22, #2a1f15);
+    border-color: #8a7654;
+    color: #e8d9b0;
+    box-shadow: 0 0 20px rgba(180, 150, 100, 0.2);
+  }
+  .track-btn-num {
+    font-size: 9px;
+    letter-spacing: 2px;
+    opacity: 0.7;
+    margin-bottom: 4px;
+  }
+  .track-btn-title {
+    font-style: italic;
+    font-size: 13px;
+  }
+
   /* ============ 음악실 (배경 이미지 컨테이너) ============ */
   .music-room {
     position: relative;
@@ -257,12 +302,25 @@
     <div class="floor-sub">Music Chamber · 큐레이션 컬렉션</div>
   </div>
 
+  <!-- ============ 곡 선택 토글 (목업) ============ -->
+  <div class="track-selector">
+    <button class="track-btn active" data-track="0" onclick="changeTrack(0)">
+      <div class="track-btn-num">TRACK 01</div>
+      <div class="track-btn-title">Mozart · Requiem K. 626</div>
+    </button>
+    <button class="track-btn" data-track="1" onclick="changeTrack(1)">
+      <div class="track-btn-num">TRACK 02</div>
+      <div class="track-btn-title">Mahler · Symphony No. 1 "Titan"</div>
+    </button>
+  </div>
+
   <!-- ============ 음악감상실 ============ -->
   <div class="music-room">
 
     <!-- 벽면 스크린 (영상) -->
     <div class="wall-screen">
       <iframe
+        id="video-player"
         src="https://www.youtube-nocookie.com/embed/FKGjVMIALJo?rel=0&modestbranding=1"
         referrerpolicy="strict-origin-when-cross-origin"
         allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -294,9 +352,9 @@
 
   <!-- 명패 -->
   <div class="nameplate">
-    <div class="plate-cat">REQUIEM IN D MINOR · K. 626</div>
-    <div class="plate-title">Wolfgang Amadeus Mozart</div>
-    <div class="plate-meta">1791 · 미완성 유작 · Concerts-Austria, Minoritenkirche</div>
+    <div class="plate-cat" id="plate-cat">REQUIEM IN D MINOR · K. 626</div>
+    <div class="plate-title" id="plate-title">Wolfgang Amadeus Mozart</div>
+    <div class="plate-meta" id="plate-meta">1791 · 미완성 유작 · Concerts-Austria, Minoritenkirche</div>
   </div>
 
   <!-- 큐레이터 메모 + 메타 -->
@@ -305,7 +363,7 @@
     <div class="note-card">
       <div class="pin"></div>
       <div class="note-label">CURATOR'S NOTE</div>
-      <div class="note-body">
+      <div class="note-body" id="curator-note">
         모차르트가 죽음의 문턱에서 받아 든 의뢰.<br>
         검은 옷을 입은 낯선 사내가 두고 간 악보 종이 위로, 그는 자신의 진혼곡을 써 내려갔다.
         <span style="font-style: italic;">Lacrimosa</span>의 여덟 마디에서 펜이 멈췄을 때,
@@ -328,7 +386,7 @@
       <div class="meta-card">
         <div class="meta-label">CHAMBER VISITORS</div>
         <div class="visitor-row">
-          <div class="visitor-num">127</div>
+          <div class="visitor-num" id="visitor-num">127</div>
           <div class="visitor-txt">명이 머물다 갔습니다</div>
         </div>
       </div>
@@ -342,7 +400,71 @@
 
   </div>
 
-  <div class="footer">··· Wunderkammer · Floor IV · 27 of 109 ···</div>
+  <div class="footer" id="footer-text">··· Wunderkammer · Floor IV · 27 of 109 ···</div>
+
+  <script>
+    // ============ 컬렉션 데이터 (목업) ============
+    // 나중에 Supabase에서 fetch 해올 부분
+    const collection = [
+      {
+        videoId: "FKGjVMIALJo",
+        startSeconds: 0,
+        plateCat: "REQUIEM IN D MINOR · K. 626",
+        plateTitle: "Wolfgang Amadeus Mozart",
+        plateMeta: "1791 · 미완성 유작 · Concerts-Austria, Minoritenkirche",
+        curatorNote: `모차르트가 죽음의 문턱에서 받아 든 의뢰.<br>
+          검은 옷을 입은 낯선 사내가 두고 간 악보 종이 위로, 그는 자신의 진혼곡을 써 내려갔다.
+          <span style="font-style: italic;">Lacrimosa</span>의 여덟 마디에서 펜이 멈췄을 때,
+          그는 서른다섯이었다.`,
+        visitors: 127,
+        index: 27
+      },
+      {
+        videoId: "2tAS9WxucBU",
+        startSeconds: 20,
+        plateCat: "SYMPHONY NO. 1 IN D MAJOR · \"TITAN\"",
+        plateTitle: "Gustav Mahler",
+        plateMeta: "1888 · Karina Canellakis · PMF Orchestra, 2025",
+        curatorNote: `스물 일곱 살 청년 말러가 라이프치히의 한 방에서 사랑에 빠졌다.<br>
+          친구의 아내였던 마리온. 이루어질 수 없는 사랑이었다.
+          그 좌절과 환희, 자연에 대한 황홀과 죽음의 그림자가 한 청년의 첫 교향곡을 만들었다.
+          장 파울의 소설 <span style="font-style: italic;">「거인」</span>에서 빌려온 이름.
+          그러나 거인은 신화 속 영웅이 아니라, 자신의 운명과 싸우는 한 인간이었다.`,
+        visitors: 84,
+        index: 28
+      }
+    ];
+
+    // ============ 곡 전환 함수 ============
+    function changeTrack(idx) {
+      const track = collection[idx];
+
+      // 영상 교체 (시작점 옵션 포함)
+      const startParam = track.startSeconds > 0 ? `&start=${track.startSeconds}` : '';
+      document.getElementById('video-player').src = 
+        `https://www.youtube-nocookie.com/embed/${track.videoId}?rel=0&modestbranding=1${startParam}`;
+
+      // 명패 교체
+      document.getElementById('plate-cat').textContent = track.plateCat;
+      document.getElementById('plate-title').textContent = track.plateTitle;
+      document.getElementById('plate-meta').textContent = track.plateMeta;
+
+      // 큐레이터 메모 교체
+      document.getElementById('curator-note').innerHTML = track.curatorNote;
+
+      // 방문자 수 교체
+      document.getElementById('visitor-num').textContent = track.visitors;
+
+      // 푸터 인덱스 교체
+      document.getElementById('footer-text').textContent = 
+        `··· Wunderkammer · Floor IV · ${track.index} of 109 ···`;
+
+      // 버튼 active 상태 교체
+      document.querySelectorAll('.track-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === idx);
+      });
+    }
+  </script>
 
 </body>
 </html>
