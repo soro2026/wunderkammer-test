@@ -53,6 +53,48 @@
     border-color: #6b5838;
   }
 
+  /* ============ 음반장 진입 버튼 ============ */
+  .lp-room-btn {
+    background: linear-gradient(180deg, #3a2a18, #1a1208);
+    border: 1px solid #6b5838;
+    color: #d4c5a0;
+    padding: 10px 22px;
+    font-family: 'Georgia', 'Noto Serif KR', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    margin-top: 12px;
+    margin-left: 8px;
+    transition: all 0.3s;
+    border-radius: 2px;
+    font-style: italic;
+    text-transform: uppercase;
+  }
+  .lp-room-btn:hover {
+    background: linear-gradient(180deg, #5a4228, #2a1f15);
+    border-color: #d4c5a0;
+    color: #f0e2b8;
+    box-shadow: 0 0 16px rgba(212, 197, 160, 0.2);
+  }
+
+  /* ============ 페이드 인/아웃 오버레이 ============ */
+  .page-fade {
+    position: fixed;
+    inset: 0;
+    background: #fdf2e6;
+    z-index: 9999;
+    opacity: 1;
+    pointer-events: none;
+    transition: opacity 1s ease;
+  }
+  .page-fade.gone {
+    opacity: 0;
+  }
+  .page-fade.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
   /* ============ 곡 선택 토글 ============ */
   .track-selector {
     max-width: 880px;
@@ -284,6 +326,9 @@
 </head>
 <body>
 
+  <!-- 페이드 인/아웃 오버레이 -->
+  <div class="page-fade" id="pageFade"></div>
+
   <div class="header">
     <div class="header-label">EG WUNDERKAMMER</div>
     <div class="divider"></div>
@@ -291,6 +336,7 @@
     <div class="floor-sub">Music Chamber · 큐레이션 컬렉션</div>
     <div class="room-name" id="room-name">— 음악실 입장 중 —</div>
     <button class="reshuffle-btn" onclick="randomBackground()">🎲 다른 음악실로</button>
+    <button class="lp-room-btn" id="lpRoomBtn">♪ 음반 서고로</button>
   </div>
 
   <!-- 곡 선택 토글 -->
@@ -613,9 +659,34 @@
     }
 
     // ============================================
-    // 초기 실행: 랜덤 배경으로 입장
+    // 초기 실행
     // ============================================
     randomBackground();
+
+    // URL 파라미터로 트랙 자동 선택 (?track=0 → 레퀴엠, ?track=1 → 말러)
+    const urlParams = new URLSearchParams(window.location.search);
+    const trackParam = urlParams.get('track');
+    if (trackParam !== null) {
+      const trackIdx = parseInt(trackParam, 10);
+      if (!isNaN(trackIdx) && trackIdx >= 0 && trackIdx < collection.length) {
+        changeTrack(trackIdx);
+      }
+    }
+
+    // 페이드 인 (음반장에서 넘어왔을 때 부드럽게 등장)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById('pageFade').classList.add('gone');
+      });
+    });
+
+    // 음반 서고로 이동 (페이드 아웃)
+    document.getElementById('lpRoomBtn').addEventListener('click', () => {
+      const fade = document.getElementById('pageFade');
+      fade.classList.remove('gone');
+      fade.classList.add('active');
+      setTimeout(() => { window.location.href = 'lp_room.html'; }, 1000);
+    });
   </script>
 
 </body>
